@@ -104,12 +104,13 @@ const Frame = ({
           aspectRatio: "1/1",
           backgroundColor: "#333",
           width: "1080px",
-          height: "auto",
+          height: "1080px",
           padding: "4rem",
 
           display: "grid",
 
           position: "relative",
+          overvlow: "hidden",
         }}
       >
         <h2
@@ -120,6 +121,8 @@ const Frame = ({
             textAlign: "left",
 
             maxWidth: "90%",
+            zIndex: "1",
+            wordBreak: "break-all"
           }}
         >
           {text}
@@ -129,6 +132,9 @@ const Frame = ({
           style={{
             alignSelf: "end",
             justifySelf: "end",
+            position: "absolute",
+            bottom: "4rem",
+            right: "4rem"
           }}
           width={520}
           height={520}
