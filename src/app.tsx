@@ -65,10 +65,15 @@ export function App() {
         />
 
         <fieldset style={{ display: "flex", flexDirection: "column" }}>
-          <legend>Social media</legend>
+          <legend>Social media targets</legend>
           {sizeKeys.map((socialMedia) => (
-            <label key={socialMedia}>
-              {socialMedia}
+            <label
+              key={socialMedia}
+              style={{
+                display: "flex",
+                gap: "0.5rem",
+              }}
+            >
               <input
                 type="checkbox"
                 name={socialMedia}
@@ -84,6 +89,7 @@ export function App() {
                   }
                 }}
               />
+              {socialMedia}
             </label>
           ))}
         </fieldset>
