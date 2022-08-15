@@ -3,14 +3,13 @@ import { useRef, useState } from "preact/hooks";
 import domtoimage from "dom-to-image-more";
 import "./app.css";
 
-import { AcceleratedComputing } from "@carbon/pictograms-react";
-
 import { sizes } from "./data/sizes";
 type SizesUnion = keyof typeof sizes;
 const sizeKeys = Object.keys(sizes) as unknown as SizesUnion[];
 
 export function App() {
   const [text, setText] = useState("");
+  const [pictogram, setPictogram] = useState("");
   const [selectedSocialMedias, setSelectedSocialMedias] = useState<
     SizesUnion[]
   >([]);
@@ -42,9 +41,8 @@ export function App() {
       <div
         style={{
           display: "flex",
-          gap: "1rem",
+          gap: "2rem",
           flexDirection: "column",
-          alignItems: "center",
         }}
       >
         <button
@@ -54,15 +52,43 @@ export function App() {
         >
           {isHidden ? "show" : "hide"} preview
         </button>
-
-        <textarea
-          onChange={(e) => {
-            setText(e.currentTarget.value);
-          }}
-          placeholder="Let's create..."
-          style={{ fontSize: "1.5rem", padding: "0.5rem" }}
-          type="text"
-        />
+        <label htmlFor="text">
+          Text content:
+          <textarea
+            onChange={(e) => {
+              setText(e.currentTarget.value);
+            }}
+            placeholder="Let's create..."
+            style={{ fontSize: "1.5rem", padding: "0.5rem", width: "100%" }}
+            type="text"
+            name="text"
+            id="text"
+          />
+        </label>
+        <label htmlFor="pictogram">
+          pictogram:
+          <input
+            onChange={(e) => {
+              setPictogram(e.currentTarget.value);
+            }}
+            placeholder="<Airplane />"
+            style={{ fontSize: "1.5rem", padding: "0.5rem", width: "100%" }}
+            type="text"
+            name="pictogram"
+            id="pictogram"
+          />
+          <p style={{ width: "100%" }}>
+            For a reference of all the available pictograms, visit the{" "}
+            <a
+              target="_blank"
+              href="https://carbondesignsystem.com/guidelines/pictograms/library"
+            >
+              Carbon design system pictogram library
+            </a>
+            . To copy a pictogram's name to your clipboard, hover over it and
+            click the {`</>`} symbol.
+          </p>
+        </label>
 
         <fieldset style={{ display: "flex", flexDirection: "column" }}>
           <legend>Social media targets</legend>
@@ -93,7 +119,6 @@ export function App() {
             </label>
           ))}
         </fieldset>
-
         <button
           onClick={() => {
             const promises = selectedSocialMedias.map((socialMedia) => {
@@ -134,6 +159,7 @@ export function App() {
                   width: sizes[socialMedia].width,
                   height: sizes[socialMedia].height,
                 }}
+                pictogram={pictogram.length ? pictogram : undefined}
                 hidden={isHidden}
                 reference={refEnum[socialMedia]}
                 text={text}
@@ -205,9 +231,7 @@ const Frame = ({
         >
           {text}
         </h2>
-        <Suspense fallback={<AcceleratedComputing />}>
-          {renderPictogram(pictogram)}
-        </Suspense>
+        <Suspense fallback={null}>{renderPictogram(pictogram)}</Suspense>
       </div>
     </div>
   );
