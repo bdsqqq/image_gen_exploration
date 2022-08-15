@@ -7,9 +7,11 @@ import { sizes } from "./data/sizes";
 type SizesUnion = keyof typeof sizes;
 const sizeKeys = Object.keys(sizes) as unknown as SizesUnion[];
 
+import { pictogramNames } from "./data/pictograms";
+
 export function App() {
   const [text, setText] = useState("");
-  const [pictogram, setPictogram] = useState("");
+  const [pictogram, setPictogram] = useState(pictogramNames[0]);
   const [selectedSocialMedias, setSelectedSocialMedias] = useState<
     SizesUnion[]
   >([]);
@@ -67,16 +69,21 @@ export function App() {
         </label>
         <label htmlFor="pictogram">
           pictogram:
-          <input
+          <select
             onChange={(e) => {
               setPictogram(e.currentTarget.value);
             }}
-            placeholder="<Airplane />"
+            value={pictogram}
             style={{ fontSize: "1.5rem", padding: "0.5rem", width: "100%" }}
-            type="text"
             name="pictogram"
             id="pictogram"
-          />
+          >
+            {pictogramNames.map((name) => (
+              <option key={name} value={name}>
+                {name}
+              </option>
+            ))}
+          </select>
           <p style={{ width: "100%" }}>
             For a reference of all the available pictograms, visit the{" "}
             <a
@@ -190,6 +197,8 @@ const Frame = ({
 }) => {
   const renderPictogram = (pictogram: string) => {
     let pictogramString = pictogram.replace("<", "").replace(" />", "");
+    if (!pictogramNames.includes(pictogramString)) return null;
+
     let Pictogram = lazy(() =>
       import("@carbon/pictograms-react").then(
         (pictograms) => pictograms[pictogramString]
