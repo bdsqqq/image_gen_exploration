@@ -7,11 +7,24 @@ type SizesUnion = keyof typeof sizes;
 const sizeKeys = Object.keys(sizes) as unknown as SizesUnion[];
 
 export function App() {
-  const ref = useRef<HTMLDivElement>(null);
   const [text, setText] = useState("");
-  const [socialMedia, setSocialMedia] = useState<SizesUnion>(sizeKeys[0]);
+  const [selectedSocialMedias, setSelectedSocialMedias] = useState<
+    SizesUnion[]
+  >([]);
 
   const [isHidden, setIsHidden] = useState(true);
+
+  // Should probably create only the refs I need BUT since there's just 4 possible social medias for now I'm not opening the whole dynamic ref can of worms.
+  const facebookRef = useRef<HTMLDivElement>(null);
+  const twitterRef = useRef<HTMLDivElement>(null);
+  const instagramRef = useRef<HTMLDivElement>(null);
+  const linkedinRef = useRef<HTMLDivElement>(null);
+  const refEnum = {
+    facebook: facebookRef,
+    twitter: twitterRef,
+    instagram: instagramRef,
+    linkedin: linkedinRef,
+  };
 
   return (
     <div
@@ -48,25 +61,39 @@ export function App() {
           type="text"
         />
 
-        <select
-          value={socialMedia}
-          onChange={(e) => {
-            setSocialMedia(e.currentTarget.value as SizesUnion);
-          }}
-        >
-          {sizeKeys.map((key) => (
-            <option key={key} value={key}>
-              {key}
-            </option>
+        <fieldset style={{ display: "flex", flexDirection: "column" }}>
+          <legend>Social media</legend>
+          {sizeKeys.map((socialMedia) => (
+            <label key={socialMedia}>
+              {socialMedia}
+              <input
+                type="checkbox"
+                name={socialMedia}
+                checked={selectedSocialMedias.includes(socialMedia)}
+                onChange={(e) => {
+                  if (e.currentTarget.checked) {
+                    setSelectedSocialMedias((prev) => [...prev, socialMedia]);
+                  }
+                  if (!e.currentTarget.checked) {
+                    setSelectedSocialMedias((prev) =>
+                      prev.filter((s) => s !== socialMedia)
+                    );
+                  }
+                }}
+              />
+            </label>
           ))}
-        </select>
+        </fieldset>
 
         <button
           onClick={() => {
-            if (ref.current) {
-              domtoimage
+            const promises = selectedSocialMedias.map((socialMedia) => {
+              const ref = refEnum[socialMedia];
+              if (!ref.current) return;
+
+              return domtoimage
                 .toJpeg(ref.current, {
-                  quality: 0.95,
+                  quality: 1,
                   height: sizes[socialMedia].height,
                   width: sizes[socialMedia].width,
                 })
@@ -77,29 +104,38 @@ export function App() {
                   link.href = image;
                   link.click();
                 });
-            }
+            });
+
+            Promise.all(promises).then(() => {
+              console.log("done");
+            });
           }}
         >
-          Download image
+          Download images
         </button>
       </div>
 
-      <div style={{ width: "100%", height: "100%", overflowX: "hidden" }}>
-        <div style={{ transform: "scale(0.3)" }}>
-          <Frame
-            size={{
-              width: sizes[socialMedia].width,
-              height: sizes[socialMedia].height,
-            }}
-            hidden={isHidden}
-            reference={ref}
-            image={{
-              src: "https://images.unsplash.com/photo-1558865869-c93f6f8482af?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=520&q=80",
-              alt: "Abstract forms",
-            }}
-            text={text}
-          />
-        </div>
+      <div style={{ width: "100%", height: "100%" }}>
+        {selectedSocialMedias.map((socialMedia) => (
+          <>
+            <h2>{socialMedia}</h2>
+            <div style={{}}>
+              <Frame
+                size={{
+                  width: sizes[socialMedia].width,
+                  height: sizes[socialMedia].height,
+                }}
+                hidden={isHidden}
+                reference={refEnum[socialMedia]}
+                image={{
+                  src: "https://images.unsplash.com/photo-1558865869-c93f6f8482af?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=520&q=80",
+                  alt: "Abstract forms",
+                }}
+                text={text}
+              />
+            </div>
+          </>
+        ))}
       </div>
     </div>
   );
