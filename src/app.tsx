@@ -16,9 +16,10 @@ export function App() {
   return (
     <div
       style={{
-        display: "flex",
+        display: "grid",
+        gridTemplateColumns: "300px 1fr",
+
         width: "100vw",
-        height: "100vh",
         padding: "2rem",
       }}
     >
@@ -28,7 +29,6 @@ export function App() {
           gap: "1rem",
           flexDirection: "column",
           alignItems: "center",
-          justifyContent: "center",
         }}
       >
         <button
@@ -84,20 +84,22 @@ export function App() {
         </button>
       </div>
 
-      <div style={{ width: "100%", transform: "scale(0.3)" }}>
-        <Frame
-          size={{
-            width: sizes[socialMedia].width,
-            height: sizes[socialMedia].height,
-          }}
-          hidden={isHidden}
-          reference={ref}
-          image={{
-            src: "https://images.unsplash.com/photo-1558865869-c93f6f8482af?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=520&q=80",
-            alt: "Abstract forms",
-          }}
-          text={text}
-        />
+      <div style={{ width: "100%", height: "100%", overflowX: "hidden" }}>
+        <div style={{ transform: "scale(0.3)" }}>
+          <Frame
+            size={{
+              width: sizes[socialMedia].width,
+              height: sizes[socialMedia].height,
+            }}
+            hidden={isHidden}
+            reference={ref}
+            image={{
+              src: "https://images.unsplash.com/photo-1558865869-c93f6f8482af?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=520&q=80",
+              alt: "Abstract forms",
+            }}
+            text={text}
+          />
+        </div>
       </div>
     </div>
   );
