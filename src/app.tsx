@@ -2,10 +2,14 @@ import { useRef, useState } from "preact/hooks";
 import domtoimage from "dom-to-image-more";
 import "./app.css";
 
+import { sizes } from "./data/sizes";
+type SizesUnion = keyof typeof sizes;
+const sizeKeys = Object.keys(sizes) as unknown as SizesUnion[];
+
 export function App() {
   const ref = useRef<HTMLDivElement>(null);
   const [text, setText] = useState("");
-  const [image, setImage] = useState();
+  const [socialMedia, setSocialMedia] = useState<SizesUnion>(sizeKeys[0]);
 
   const [isHidden, setIsHidden] = useState(true);
 
@@ -44,14 +48,27 @@ export function App() {
           type="text"
         />
 
+        <select
+          value={socialMedia}
+          onChange={(e) => {
+            setSocialMedia(e.currentTarget.value as SizesUnion);
+          }}
+        >
+          {sizeKeys.map((key) => (
+            <option key={key} value={key}>
+              {key}
+            </option>
+          ))}
+        </select>
+
         <button
           onClick={() => {
             if (ref.current) {
               domtoimage
                 .toJpeg(ref.current, {
                   quality: 0.95,
-                  height: 1080,
-                  width: 1080,
+                  height: sizes[socialMedia].height,
+                  width: sizes[socialMedia].width,
                 })
                 .then((image) => {
                   // download image
@@ -69,6 +86,10 @@ export function App() {
 
       <div style={{ width: "100%", transform: "scale(0.3)" }}>
         <Frame
+          size={{
+            width: sizes[socialMedia].width,
+            height: sizes[socialMedia].height,
+          }}
           hidden={isHidden}
           reference={ref}
           image={{
@@ -85,11 +106,16 @@ export function App() {
 const Frame = ({
   hidden,
   text,
+  size,
   image,
   reference,
 }: {
   hidden?: boolean;
   text: string;
+  size: {
+    height: number;
+    width: number;
+  };
   image: {
     src: string;
     alt: string;
@@ -101,10 +127,9 @@ const Frame = ({
       <div
         ref={reference}
         style={{
-          aspectRatio: "1/1",
           backgroundColor: "#333",
-          width: "1080px",
-          height: "1080px",
+          width: size.width,
+          height: size.height,
           padding: "4rem",
 
           display: "grid",
@@ -122,7 +147,7 @@ const Frame = ({
 
             maxWidth: "90%",
             zIndex: "1",
-            wordBreak: "break-all"
+            wordBreak: "break-all",
           }}
         >
           {text}
@@ -134,7 +159,7 @@ const Frame = ({
             justifySelf: "end",
             position: "absolute",
             bottom: "4rem",
-            right: "4rem"
+            right: "4rem",
           }}
           width={520}
           height={520}
