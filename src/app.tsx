@@ -1,6 +1,9 @@
+import { lazy, Suspense } from "preact/compat";
 import { useRef, useState } from "preact/hooks";
 import domtoimage from "dom-to-image-more";
 import "./app.css";
+
+import { AcceleratedComputing } from "@carbon/pictograms-react";
 
 import { sizes } from "./data/sizes";
 type SizesUnion = keyof typeof sizes;
@@ -127,10 +130,6 @@ export function App() {
                 }}
                 hidden={isHidden}
                 reference={refEnum[socialMedia]}
-                image={{
-                  src: "https://images.unsplash.com/photo-1558865869-c93f6f8482af?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=520&q=80",
-                  alt: "Abstract forms",
-                }}
                 text={text}
               />
             </div>
@@ -145,7 +144,7 @@ const Frame = ({
   hidden,
   text,
   size,
-  image,
+  pictogram = "Airplane",
   reference,
 }: {
   hidden?: boolean;
@@ -154,12 +153,22 @@ const Frame = ({
     height: number;
     width: number;
   };
-  image: {
-    src: string;
-    alt: string;
-  };
+  pictogram?: string;
   reference: preact.RefObject<HTMLDivElement>;
 }) => {
+  const renderPictogram = (pictogram: string) => {
+    let pictogramString = pictogram.replace("<", "").replace(" />", "");
+    let Pictogram = lazy(() =>
+      import("@carbon/pictograms-react").then(
+        (pictograms) => pictograms[pictogramString]
+      )
+    );
+    if (Pictogram) {
+      return <Pictogram />;
+    }
+    return null;
+  };
+
   return (
     <div style={{ display: hidden ? "none" : "block" }}>
       <div
@@ -190,20 +199,9 @@ const Frame = ({
         >
           {text}
         </h2>
-
-        <img
-          style={{
-            alignSelf: "end",
-            justifySelf: "end",
-            position: "absolute",
-            bottom: "4rem",
-            right: "4rem",
-          }}
-          width={520}
-          height={520}
-          src={image.src}
-          alt={image.alt}
-        />
+        <Suspense fallback={<AcceleratedComputing />}>
+          {renderPictogram(pictogram)}
+        </Suspense>
       </div>
     </div>
   );
