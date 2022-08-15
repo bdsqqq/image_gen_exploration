@@ -73,7 +73,7 @@ export function App() {
                 .then((image) => {
                   // download image
                   let link = document.createElement("a");
-                  link.download = "my-image-name.jpeg";
+                  link.download = `${socialMedia}.jpg`;
                   link.href = image;
                   link.click();
                 });
